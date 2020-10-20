@@ -1,6 +1,9 @@
 import tkinter as tk #Tkinter import for GUI
 from PIL import ImageTk,Image #PIL import for image manipulation
 from time import sleep
+import urllib.request # Needed for API access and image download
+import io # Needed to manipulate image in memory
+import asyncio # async
 
 #Setups Tkinter GUI
 def tkinter_init():
@@ -25,11 +28,16 @@ def center_image(img, root):
     height = (root.winfo_screenheight() - img.height) // 2
     return width, height
 
+def download_image(image_url):
+    with urllib.request.urlopen(image_url) as url:
+        f = io.BytesIO(url.read())
+    return Image.open(f)
+
 def display_image(root):
     canvas = tk.Canvas(root)
     canvas.config(background="black") # change background to black
     canvas.pack(expand=True, fill='both') # make canvas entire tk
-    img = Image.open("21.jpg") # get image
+    img = download_image("https://i.scdn.co/image/ab67616d0000b273c03f8ef4160b2a3b72dd407d") # get image
     img = resize_image(img, root) if img.height != root.winfo_screenheight() and img.width != root.winfo_screenwidth() else img
     width, height = center_image(img, root)
     img = ImageTk.PhotoImage(img)
